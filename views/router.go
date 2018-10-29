@@ -3,10 +3,12 @@ package views
 import (
    "fmt"
    "html/template"
-   "net/http" 
+   "net/http"
+
+   "github.com/gorilla/mux" 
 )
 
-func loginPage(w http.ResponseWriter, r *http.Request) {
+func LoginHandler(w http.ResponseWriter, r *http.Request) {
    t, err := template.ParseFiles("views/logintemplate.html")
    if err != nil {
       fmt.Println(err)
@@ -16,22 +18,25 @@ func loginPage(w http.ResponseWriter, r *http.Request) {
    t.Execute(w, t)
 }
 
+func HomeHandler(w http.ResponseWriter, r *http.Request) {
+   fmt.Fprintf(w, "Welcome to the Home Page")
+}
+
 func StartServer() {
-   mux := http.NewServeMux()
+
+   router := mux.NewRouter()
 
    //load static assets
-   //fileServer := http.FileServer(http.Dir("./views/"))
-   //mux.PathPrefix("/views/").Handler(http.StripPrefix("views/", fileServer)) //
-   fs := http.FileServer(http.Dir("static"))
-   http.Handle("/static/", http.StripPrefix("/static/", fs))
+   fileServer := http.FileServer(http.Dir("./views/"))
+   router.PathPrefix("/views/").Handler(http.StripPrefix("/views/", fileServer))
 
    //routes
-   handler := http.HandlerFunc(loginPage)
-   mux.Handle("/login", handler) 
+   router.HandleFunc("/", HomeHandler)
+   router.HandleFunc("/login", LoginHandler)
 
    //start server
-   //http.Handle("/", mux)
-   http.ListenAndServe(":8080", mux)
+   http.Handle("/", router)
+   http.ListenAndServe(":8080", router)
 
 }
 
