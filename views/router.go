@@ -5,11 +5,33 @@ import (
    "html/template"
    "net/http"
 
-   "github.com/gorilla/mux" 
+   "github.com/gorilla/mux"
 )
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
    t, err := template.ParseFiles("views/logintemplate.html")
+   if err != nil {
+      fmt.Println(err)
+      return
+   }
+
+   t.Execute(w, t)
+}
+
+func CredentialHandler(w http.ResponseWriter, r *http.Request) {
+   username := r.FormValue("username")
+   password := r.FormValue("password")
+
+   redirectTarget := "/"
+   if username=="admin" && password=="admin" { //TODO:  Set to !="", then check creds in func
+      //set session
+      redirectTarget = "/main"
+   }
+   http.Redirect(w, r, redirectTarget, 302)
+}
+
+func MainHandler(w http.ResponseWriter, r *http.Request) {
+   t, err := template.ParseFiles("views/maintemplate.html")
    if err != nil {
       fmt.Println(err)
       return
@@ -33,6 +55,8 @@ func StartServer() {
    //routes
    router.HandleFunc("/", HomeHandler)
    router.HandleFunc("/login", LoginHandler)
+   router.HandleFunc("/checkLogin", CredentialHandler)
+   router.HandleFunc("/main", MainHandler)
 
    //start server
    http.Handle("/", router)
