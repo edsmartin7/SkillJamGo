@@ -2,10 +2,11 @@
 package main
 
 import (
-   "skilljam_go/views"
+   "skilljam_go/model"
 )
 
 func main() {
-   views.StartServer()
+   //views.StartServer()
+   model.VerifyLogin("admin", "martin")
 }
 
