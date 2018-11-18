@@ -25,7 +25,13 @@ func VerifyLogin(username string, password string) bool {
    if err != nil {
       fmt.Println("Error in query to verify login", err)
    }
+   var un string
+   var pw string
+   for verify.Next() {
+      err = verify.Scan(&un, &pw)
+   }
+   db.Close()
 
-   return true
+   return username==un && password==pw
 }
 
