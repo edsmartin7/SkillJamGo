@@ -6,7 +6,17 @@ import (
    "net/http"
 
    "github.com/gorilla/mux"
+   "github.com/gorilla/sessions"
 )
+
+const (
+
+)
+
+var (
+   store = sessions.NewCookieStore(os.Getenv("SESSION-KEY"))
+)
+
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
    t, err := template.ParseFiles("views/logintemplate.html")
@@ -25,6 +35,15 @@ func CredentialHandler(w http.ResponseWriter, r *http.Request) {
    redirectTarget := "/"
    if username=="admin" && password=="admin" { //TODO:  Set to !="", then check creds in func
       //set session
+      //
+      session, err := store.Get(r, "seession-name")
+      if err != nil {
+         http.Error(w, err.Error(), http.StatusInteranlServerError)
+         return
+      }
+      session.Values["foo"] = "bar"
+      session.Save(r, w)
+      //
       redirectTarget = "/main"
    }
    http.Redirect(w, r, redirectTarget, 302)
@@ -39,9 +58,12 @@ func MainHandler(w http.ResponseWriter, r *http.Request) {
 
    t.Execute(w, t)
 }
-
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
    fmt.Fprintf(w, "Welcome to the Home Page")
+}
+
+func ProfileHandler(w http.ResponseWriter, r *http.Request) {
+
 }
 
 func StartServer() {
