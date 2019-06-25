@@ -4,6 +4,7 @@ import (
    "fmt"
    "html/template"
    "net/http"
+   "os"
 
    "github.com/gorilla/mux"
    "github.com/gorilla/sessions"
@@ -14,10 +15,10 @@ const (
 )
 
 var (
-   store = sessions.NewCookieStore(os.Getenv("SESSION-KEY"))
+   store = sessions.NewCookieStore([]byte(os.Getenv("SESSION-KEY")))
 )
 
-
+//shows the login page
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
    t, err := template.ParseFiles("views/logintemplate.html")
    if err != nil {
@@ -28,22 +29,29 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
    t.Execute(w, t)
 }
 
+//shows the home page after logout
+func LogoutHandler(w http.ResponseWriter, r *http.Request) {
+
+}
+
+//actual login functionality
 func CredentialHandler(w http.ResponseWriter, r *http.Request) {
-   username := r.FormValue("username")
+   username := r.FormValue("username") //or r.PostForm.Get("username")
    password := r.FormValue("password")
 
    redirectTarget := "/"
    if username=="admin" && password=="admin" { //TODO:  Set to !="", then check creds in func
       //set session
-      //
-      session, err := store.Get(r, "seession-name")
+      session, err := store.Get(r, "session-name") //session-name -> username
+      //session.Values["username"] = username
+      //session.Save(r,w)
       if err != nil {
-         http.Error(w, err.Error(), http.StatusInteranlServerError)
+         http.Error(w, err.Error(), http.StatusInternalServerError)
          return
       }
       session.Values["foo"] = "bar"
       session.Save(r, w)
-      //
+      
       redirectTarget = "/main"
    }
    http.Redirect(w, r, redirectTarget, 302)
@@ -63,7 +71,13 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func ProfileHandler(w http.ResponseWriter, r *http.Request) {
+   t, err := template.ParseFiles("views/profiletemplate.html")
+   if err != nil {
+      fmt.Println(err)
+      return
+   }
 
+   t.Execute(w, t)
 }
 
 func StartServer() {
@@ -79,6 +93,7 @@ func StartServer() {
    router.HandleFunc("/login", LoginHandler)
    router.HandleFunc("/checkLogin", CredentialHandler)
    router.HandleFunc("/main", MainHandler)
+   router.HandleFunc("/profile", ProfileHandler)
 
    //start server
    http.Handle("/", router)

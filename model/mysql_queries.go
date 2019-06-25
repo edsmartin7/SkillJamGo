@@ -6,4 +6,8 @@ const (
                        WHERE username=?
                        AND password=?`
 
+   GetClosestZips = `SELECT zipcodes 
+                     FROM zipdb
+                     WHERE zip=?
+                     LIMIT 5`
 )

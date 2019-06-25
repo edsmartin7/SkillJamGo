@@ -1,11 +1,16 @@
 package model
 
+/*
+
+*/
+
 import (
    "database/sql"
    "fmt"
 
    _ "github.com/go-sql-driver/mysql"
 )
+
 
 func OpenDB() sql.DB {
 
@@ -20,6 +25,7 @@ func OpenDB() sql.DB {
 func VerifyLogin(username string, password string) bool {
 
    db := OpenDB()
+   defer db.Close()
 
    verify, err := db.Query(CheckCredentials, username, password)
    if err != nil {
@@ -30,8 +36,25 @@ func VerifyLogin(username string, password string) bool {
    for verify.Next() {
       err = verify.Scan(&un, &pw)
    }
-   db.Close()
 
    return username==un && password==pw
+}
+
+func GetClosestZipcodes(zip string) []string {
+
+   db := OpenDB()
+   defer db.Close()
+
+   zips, err := db.Query(GetClosestZips, zip)
+   if err != nil {
+      fmt.Println("Error in getting zip codes", err)
+   }
+
+   var list string
+   for zips.Next() {
+      err = zips.Scan(&list)
+   }
+
+   return list
 }
 
