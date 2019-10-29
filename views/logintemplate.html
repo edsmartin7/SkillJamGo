@@ -11,15 +11,23 @@
   </head>    
   <body>
     <div class="container-fluid">
-      <h1>SkillJam</h1>
-      <h2>Login to find other talented musicians</h2>
-      <form action="/checkLogin"><!-- method="POST"-->
-        Username: <br>
-        <input type="text" name="username"><br>
-        Password: <br>
-        <input type="text" name="password"><br>
-        <input type="submit" value="Enter"><br>
-      </form>
+      <div class="navbar">
+        <h1>SkillJam</h1>
+      </div>
+      <div class="row">
+        <div class="col-md-5">
+          <div class="loginArea">
+            <h2>Login to find other talented musicians</h2>
+            <form action="/checkLogin"><!-- method="POST"-->
+              Username: <br>
+              <input type="text" name="username"><br>
+              Password: <br>
+              <input type="text" name="password"><br>
+              <input type="submit" value="Enter"><br>
+            </form>
+          </div>
+        </div>
+      </div>
     </div>
   </body>
 </html>

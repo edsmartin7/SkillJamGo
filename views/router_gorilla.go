@@ -91,6 +91,7 @@ func StartServer() {
    //routes
    router.HandleFunc("/", HomeHandler)
    router.HandleFunc("/login", LoginHandler)
+   router.HandleFunc("/logout", LogoutHandler)
    router.HandleFunc("/checkLogin", CredentialHandler)
    router.HandleFunc("/main", MainHandler)
    router.HandleFunc("/profile", ProfileHandler)
